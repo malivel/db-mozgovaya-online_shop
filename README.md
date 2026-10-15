@@ -1,18 +1,12 @@
-<!--
-  Это шаблон. После создания своего репозитория:
-  1. Назовите репозиторий db-<фамилия>-<тема>, например db-ivanova-cinema.
-  2. Заполните разделы ниже под свою тему и удалите этот комментарий.
--->
+# Интернет магазин
 
-# Название проекта
-
-Тема № __: **...**. Одно предложение: какие данные хранит база и кому они нужны.
+Тема № 5 : **Интернет-магазин**. База данных хранит информацию о товарах, категориях, покупателях и заказах и помогает контролировать состав заказов и остатки товаров.
 
 | | |
 | --- | --- |
-| Главная таблица | ... |
-| Связь N:M | ... и ... через `...` |
-| Бизнес-правило | ... |
+| Главная таблица | products |
+| Связь N:M | orders и products через `order_items` |
+| Бизнес-правило | Остаток товара на складе не может быть отрицательным |
 | СУБД | PostgreSQL 17 в Docker |
 
 ## Задания курса
@@ -42,38 +36,66 @@ dbcheck run demo/lab1.sql     # сценарий лабы 1
 
 ## ER-диаграмма
 
-<!-- Замените пример своими таблицами: 5+ таблиц, связь N:M через связующую таблицу. -->
-
 ```mermaid
 erDiagram
-    films ||--o{ sessions : "показывают"
-    halls ||--o{ sessions : "проходит в"
-    sessions ||--o{ tickets : "продано"
-    films ||--o{ film_genres : ""
-    genres ||--o{ film_genres : ""
+    categories ||--o{ products : contains
+    customers ||--o{ orders : places
+    orders ||--o{ order_items : includes
+    products ||--o{ order_items : appears_in
 
-    films {
+    categories {
         int id PK
-        text title
+        text name UK
     }
-    film_genres {
-        int film_id PK, FK
-        int genre_id PK, FK
+    products {
+        int id PK
+        int category_id FK
+        text name UK
+        numeric price
+        int stock_quantity
+    }
+    customers {
+        int id PK
+        text name
+        text email UK
+    }
+    orders {
+        int id PK
+        int customer_id FK
+        timestamptz created_at
+        text status
+    }
+    order_items {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        numeric unit_price
     }
 ```
+
 
 ## Ограничения
 
 | Ограничение | Таблица и колонки | Зачем |
 | --- | --- | --- |
-| `UNIQUE` | ... | ... |
-| `CHECK` | ... | ... |
+| `PRIMARY KEY` | Все таблицы: `id` | Уникально идентифицирует каждую запись |
+| `UNIQUE` | `categories.name` | Не допускает одинаковые названия категорий |
+| `UNIQUE` | `products.name` | Не допускает одинаковые названия товаров |
+| `UNIQUE` | `customers.email` | Не допускает повторную регистрацию с одной почтой |
+| `UNIQUE` | `order_items.order_id`, `order_items.product_id` | Не допускает повтор одного товара в одном заказе |
+| `CHECK` | `products.price` | Цена должна быть больше нуля |
+| `CHECK` | `products.stock_quantity` | Остаток товара не может быть отрицательным |
+| `CHECK` | `orders.status` | Статус должен входить в разрешённый список |
+| `CHECK` | `order_items.quantity` | Количество товара должно быть положительным |
+| `CHECK` | `order_items.unit_price` | Цена в заказе должна быть больше нуля |
+| `FOREIGN KEY` | Столбцы `category_id`, `customer_id`, `order_id`, `product_id` | Запрещает ссылки на отсутствующие записи |
 
 ## Что сделано по лабам
 
 | Лаба | Что сделано | Сценарий |
 | --- | --- | --- |
-| 1 | ... | `demo/lab1.sql` |
+| 1 | Созданы таблицы, ключи и ограничения; добавлены тестовые данные и сценарий проверки | `demo/lab1.sql` |
 | 2 | ... | `demo/lab2.sql` |
 | 3 | ... | `demo/lab3.sql` |
 | 4 | ... | `demo/lab4.sql`, `demo/race.sql`, `demo/race_fixed.sql` |
