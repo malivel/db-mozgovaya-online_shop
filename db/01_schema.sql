@@ -10,7 +10,7 @@ CREATE TABLE categories (
 
 CREATE TABLE products (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    category_id integer NOT NULL REFERENCES categories(id),
+    category_id integer NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
     name text NOT NULL UNIQUE,
     price numeric(10, 2) NOT NULL CHECK (price > 0),
     stock_quantity integer NOT NULL DEFAULT 0
@@ -25,7 +25,7 @@ CREATE TABLE customers (
 
 CREATE TABLE orders (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    customer_id integer NOT NULL REFERENCES customers(id),
+    customer_id integer NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
     created_at timestamptz NOT NULL DEFAULT now(),
     status text NOT NULL DEFAULT 'new'
         CHECK (status IN ('new', 'paid', 'shipped', 'cancelled'))
@@ -33,8 +33,8 @@ CREATE TABLE orders (
 
 CREATE TABLE order_items (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    order_id integer NOT NULL REFERENCES orders(id),
-    product_id integer NOT NULL REFERENCES products(id),
+    order_id integer NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id integer NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
     quantity integer NOT NULL CHECK (quantity > 0),
     unit_price numeric(10, 2) NOT NULL CHECK (unit_price > 0),
     UNIQUE (order_id, product_id)
