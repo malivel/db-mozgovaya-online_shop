@@ -149,7 +149,7 @@ docker compose exec db psql -U postgres -d app -c "SELECT COUNT(*) FROM customer
 | Лаба | Что сделано | Сценарий |
 | --- | --- | --- |
 | 1 | Созданы таблицы, ключи и ограничения; добавлены тестовые данные и сценарий проверки | `demo/lab1.sql` |
-| 2 | ... | `demo/lab2.sql` |
+| 2 | Написаны запросы в файле demo/lab2.sql | `demo/lab2.sql` |
 | 3 | ... | `demo/lab3.sql` |
 | 4 | ... | `demo/lab4.sql`, `demo/race.sql`, `demo/race_fixed.sql` |
 | 5 | ... | `demo/lab5.sql` |
